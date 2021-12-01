@@ -29,6 +29,7 @@ func StartServer() {
 
 	s := grpc.NewServer()
 	greetpb.RegisterGreetServiceServer(s, &server{})
+	log.Println("Server started ...")
 
 	if err = s.Serve(lis); err != nil {
 		log.Fatal("Failed to serve %v", err)
