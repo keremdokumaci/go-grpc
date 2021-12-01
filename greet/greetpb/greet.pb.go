@@ -7,6 +7,10 @@
 package greetpb
 
 import (
+	context "context"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -284,4 +288,86 @@ func file_greet_greetpb_greet_proto_init() {
 	file_greet_greetpb_greet_proto_rawDesc = nil
 	file_greet_greetpb_greet_proto_goTypes = nil
 	file_greet_greetpb_greet_proto_depIdxs = nil
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConnInterface
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion6
+
+// GreetServiceClient is the client API for GreetService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type GreetServiceClient interface {
+	//Unary
+	Greet(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error)
+}
+
+type greetServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewGreetServiceClient(cc grpc.ClientConnInterface) GreetServiceClient {
+	return &greetServiceClient{cc}
+}
+
+func (c *greetServiceClient) Greet(ctx context.Context, in *GreetRequest, opts ...grpc.CallOption) (*GreetResponse, error) {
+	out := new(GreetResponse)
+	err := c.cc.Invoke(ctx, "/greet.GreetService/Greet", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// GreetServiceServer is the server API for GreetService service.
+type GreetServiceServer interface {
+	//Unary
+	Greet(context.Context, *GreetRequest) (*GreetResponse, error)
+}
+
+// UnimplementedGreetServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedGreetServiceServer struct {
+}
+
+func (*UnimplementedGreetServiceServer) Greet(context.Context, *GreetRequest) (*GreetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Greet not implemented")
+}
+
+func RegisterGreetServiceServer(s *grpc.Server, srv GreetServiceServer) {
+	s.RegisterService(&_GreetService_serviceDesc, srv)
+}
+
+func _GreetService_Greet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GreetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreetServiceServer).Greet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/greet.GreetService/Greet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreetServiceServer).Greet(ctx, req.(*GreetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _GreetService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "greet.GreetService",
+	HandlerType: (*GreetServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Greet",
+			Handler:    _GreetService_Greet_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "greet/greetpb/greet.proto",
 }
