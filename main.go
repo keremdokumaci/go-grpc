@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Basic gRPC Unary Implementation...")
 	go greetserver.StartServer()
 
 	fmt.Println("Waiting 5 seconds before calling Greet Service")
