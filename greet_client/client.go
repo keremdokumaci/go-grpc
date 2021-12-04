@@ -2,8 +2,10 @@ package greetclient
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/keremdokumaci/go-grpc/greet/greetpb"
 	"google.golang.org/grpc"
@@ -59,4 +61,43 @@ func StartClient() {
 		log.Printf("Response from GreetManyTimesRPC : %v ", msg.GetResult())
 	}
 
+	log.Println("Client streaming.... (LongGreet)")
+	stream, err := client.LongGreet(context.Background())
+	if err != nil {
+		log.Fatalf("error while calling longgreet(client streaming)... \n%v", err)
+	}
+
+	requests := []*greetpb.LongGreetRequest{
+		&greetpb.LongGreetRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Kerem",
+				LastName:  "Dokumacı",
+			},
+		},
+		&greetpb.LongGreetRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Kerem2",
+				LastName:  "Dokumacı2",
+			},
+		},
+		&greetpb.LongGreetRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Kerem3",
+				LastName:  "Dokumacı3",
+			},
+		},
+	}
+
+	for _, req := range requests {
+		log.Printf("Sending req : %v", req)
+		stream.Send(req)
+		time.Sleep(time.Millisecond * 200)
+	}
+
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("error while receiving response from LongGreet %v", err)
+	}
+
+	fmt.Println("LongGreet response : %v", res)
 }
